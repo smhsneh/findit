@@ -1,0 +1,92 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-lavender-light text-black font-body antialiased selection:bg-steel-light;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-header;
+  }
+}
+
+/* custom styles for cli/terminal aesthetic */
+.terminal-border {
+  border: 2px solid #000000;
+  box-shadow: 4px 4px 0px 0px #000000;
+}
+
+.terminal-border-sm {
+  border: 1px solid #000000;
+  box-shadow: 2px 2px 0px 0px #000000;
+}
+
+.terminal-border-inset {
+  border: 2px solid #000000;
+  box-shadow: inset 2px 2px 0px 0px rgba(0, 0, 0, 0.1);
+}
+
+.terminal-button {
+  border: 2px solid #000000;
+  box-shadow: 3px 3px 0px 0px #000000;
+  transition: all 0.1s ease-in-out;
+}
+
+.terminal-button:hover {
+  transform: translate(1px, 1px);
+  box-shadow: 2px 2px 0px 0px #000000;
+}
+
+.terminal-button:active {
+  transform: translate(3px, 3px);
+  box-shadow: 0px 0px 0px 0px #000000;
+}
+
+/* scanlines retro effect */
+.scanlines {
+  position: relative;
+  overflow: hidden;
+}
+
+.scanlines::before {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.05) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+  z-index: 10;
+  background-size: 100% 4px, 6px 100%;
+  pointer-events: none;
+}
+
+/* cursor blinking */
+.cursor-blink {
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  from, to { border-color: transparent }
+  50% { border-color: #000000 }
+}
+
+/* scrollbar styles */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f4effa;
+  border-left: 1px solid #000000;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #7a9bd4;
+  border: 1px solid #000000;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #4b6f9e;
+}
