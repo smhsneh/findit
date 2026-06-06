@@ -1,38 +1,38 @@
 import React, { useState } from 'react';
-import { FileText, ZoomIn, ZoomOut, Trash2, BookOpen, Clock } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { FileText, Bookmark, Download, ExternalLink, ChevronLeft, ChevronRight, Minus, Plus } from 'lucide-react';
 import { tokenize } from '../services/api';
 
 export default function PreviewPane({ doc, searchQuery, onDeleteDoc }) {
-  const [zoomLevel, setZoomLevel] = useState(100); // 100%, 120%, 80%
+  const [zoomLevel, setZoomLevel] = useState(100);
 
   if (!doc) {
     return (
-      <div className="terminal-border p-8 text-center bg-white flex flex-col items-center justify-center gap-3 h-full min-h-[400px]">
-        <BookOpen size={32} className="text-steel-dark" />
-        <span className="font-header text-sm text-black">document viewer standby</span>
-        <span className="font-mono text-xs text-steel-dark max-w-xs">
-          select a document from the search results or document list to display its contents
-        </span>
+      <div className="bg-white/75 backdrop-blur-md rounded-2xl p-6 shadow-[0_1px_4px_rgba(0,0,0,0.03)] min-h-[500px] border border-black/[0.08] flex flex-col items-center justify-center text-center gap-5">
+        <div className="w-16 h-16 rounded-2xl bg-background flex items-center justify-center text-text-light">
+          <FileText size={28} />
+        </div>
+        <h3 className="text-lg font-semibold text-text-main">no document selected</h3>
+        <p className="text-sm text-text-muted max-w-sm">
+          select a document from the search results to display its contents here.
+        </p>
       </div>
     );
   }
 
-  // function to dynamically highlight query tokens inside text
   const renderHighlightedContent = (text, query) => {
     if (!query || !text) return text;
     const tokens = tokenize(query);
     if (tokens.length === 0) return text;
 
-    // escape special regex chars in tokens
     const escaped = tokens.map(t => t.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'));
-    // match tokens with word boundary
     const regex = new RegExp(`\\b(${escaped.join('|')})\\b`, 'gi');
     const parts = text.split(regex);
 
     return parts.map((part, index) => {
       const isMatch = tokens.includes(part.toLowerCase().replace(/[^\w]/g, ''));
       return isMatch ? (
-        <mark key={index} className="bg-steel-medium/40 border-b border-black font-semibold text-black">
+        <mark key={index} className="highlight-mark">
           {part}
         </mark>
       ) : (
@@ -41,84 +41,104 @@ export default function PreviewPane({ doc, searchQuery, onDeleteDoc }) {
     });
   };
 
-  const handleZoomIn = () => {
-    setZoomLevel(z => Math.min(140, z + 20));
+  const getFileTag = (type) => {
+    switch (type) {
+      case 'pdf':  return { label: 'PDF',  bg: 'bg-red-50',   text: 'text-red-600' };
+      case 'docx': return { label: 'DOCX', bg: 'bg-blue-50',  text: 'text-blue-600' };
+      case 'txt':  return { label: 'TXT',  bg: 'bg-slate-100', text: 'text-slate-600' };
+      default:     return { label: 'DOC',  bg: 'bg-slate-100', text: 'text-slate-500' };
+    }
   };
 
-  const handleZoomOut = () => {
-    setZoomLevel(z => Math.max(80, z - 20));
+  const tag = getFileTag(doc.fileType);
+
+  const getZoomSize = () => {
+    if (zoomLevel <= 80) return 'text-[15px]';
+    if (zoomLevel >= 120) return 'text-[21px]';
+    return 'text-[18px]';
   };
 
-  const getZoomClass = () => {
-    if (zoomLevel === 80) return 'text-xs';
-    if (zoomLevel === 120) return 'text-base';
-    if (zoomLevel === 140) return 'text-lg';
-    return 'text-sm';
-  };
+  const displayName = doc.fileName.replace(/\.[^.]+$/, '').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 
   return (
-    <div className="terminal-border bg-white flex flex-col h-full min-h-[500px]">
-      {/* Pane header */}
-      <div className="flex items-center justify-between border-b-2 border-black p-3 bg-lavender-light">
-        <div className="flex items-center gap-2">
-          <div className="p-1 bg-[#2c4f7c]/10 text-brand-dark border border-black">
-            <FileText size={16} />
-          </div>
-          <div className="flex flex-col">
-            <span className="font-header text-sm text-black font-bold">
-              {doc.fileName}
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="bg-white/75 backdrop-blur-md rounded-2xl shadow-[0_1px_4px_rgba(0,0,0,0.03)] flex flex-col min-h-[500px] border border-black/[0.08] relative overflow-hidden"
+    >
+      <div className="absolute inset-0 overflow-y-auto flex flex-col">
+        {/* Header */}
+        <div className="sticky top-0 z-20 flex items-center justify-between p-6 border-b border-black/[0.08] bg-[#e9d5e6]/25 backdrop-blur-xl">
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-3">
+              <h2 className="text-lg font-bold font-header text-text-main">{doc.fileName}</h2>
+              <span className={`px-2.5 py-0.5 rounded-full text-[12px] font-semibold ${tag.bg} ${tag.text}`}>
+                {tag.label}
+              </span>
+            </div>
+            <span className="text-[13px] text-text-muted font-medium">
+              page 14 of 120 <span className="mx-1.5">•</span> {searchQuery ? 'matches highlighted' : 'no active search'}
             </span>
-            <span className="text-[10px] text-steel-dark font-mono flex items-center gap-1">
-              <Clock size={10} />
-              <span>uploaded: {new Date(doc.uploadedAt).toLocaleTimeString().toLowerCase()}</span>
-            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button className="p-2.5 rounded-btn border border-black/[0.08] bg-white/50 text-text-muted hover:text-text-main hover:bg-white transition-all shadow-sm">
+              <Bookmark size={16} />
+            </button>
+            <button className="p-2.5 rounded-btn border border-black/[0.08] bg-white/50 text-text-muted hover:text-text-main hover:bg-white transition-all shadow-sm">
+              <Download size={16} />
+            </button>
+            <button className="p-2.5 rounded-btn border border-black/[0.08] bg-white/50 text-text-muted hover:text-text-main hover:bg-white transition-all shadow-sm">
+              <ExternalLink size={16} />
+            </button>
           </div>
         </div>
 
-        <button
-          onClick={() => onDeleteDoc(doc.id)}
-          className="p-1.5 border border-black hover:bg-red-100 text-black flex items-center justify-center shrink-0"
-          title="purge document from index"
-        >
-          <Trash2 size={14} />
-        </button>
-      </div>
+        {/* Content */}
+        <div className="flex-1 p-10">
+          <div className="max-w-[70ch]">
+            <h1 className="text-2xl font-bold text-text-main mb-6">{displayName}</h1>
+            <div className={`${getZoomSize()} text-text-main leading-[2] font-normal whitespace-pre-wrap`}>
+              {renderHighlightedContent(doc.content, searchQuery)}
+            </div>
+          </div>
+        </div>
 
-      {/* Control bar */}
-      <div className="flex items-center justify-between px-3 py-1.5 bg-lavender-light/40 border-b border-black font-mono text-xs text-black">
-        <span>status: indexing active</span>
-        
-        {/* Zoom controls */}
-        <div className="flex items-center gap-2">
-          <button
-            onClick={handleZoomOut}
-            disabled={zoomLevel <= 80}
-            className="p-1 border border-black bg-white hover:bg-steel-light disabled:opacity-50 flex items-center justify-center"
-          >
-            <ZoomOut size={12} />
-          </button>
-          <span>{zoomLevel}%</span>
-          <button
-            onClick={handleZoomIn}
-            disabled={zoomLevel >= 140}
-            className="p-1 border border-black bg-white hover:bg-steel-light disabled:opacity-50 flex items-center justify-center"
-          >
-            <ZoomIn size={12} />
-          </button>
+        {/* Footer Controls */}
+        <div className="sticky bottom-0 z-20 flex items-center justify-between px-6 py-4 border-t border-black/[0.08] bg-white/60 backdrop-blur-xl mt-auto">
+          {/* Pagination */}
+          <div className="flex items-center bg-white/80 border border-black/[0.08] rounded-full overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+            <button className="px-3.5 py-2 text-text-light hover:text-text-main hover:bg-white transition-colors">
+              <ChevronLeft size={16} />
+            </button>
+            <span className="px-4 text-[13px] font-semibold text-text-main border-x border-black/[0.08] py-2">
+              14 / 120
+            </span>
+            <button className="px-3.5 py-2 text-text-light hover:text-text-main hover:bg-white transition-colors">
+              <ChevronRight size={16} />
+            </button>
+          </div>
+
+          {/* Zoom */}
+          <div className="flex items-center bg-white/80 border border-black/[0.08] rounded-full overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+            <button
+              onClick={() => setZoomLevel(z => Math.max(80, z - 20))}
+              className="px-3.5 py-2 text-text-light hover:text-text-main hover:bg-white transition-colors"
+            >
+              <Minus size={16} />
+            </button>
+            <span className="px-4 text-[13px] font-semibold text-text-main border-x border-black/[0.08] py-2 min-w-[65px] text-center">
+              {zoomLevel}%
+            </span>
+            <button
+              onClick={() => setZoomLevel(z => Math.min(140, z + 20))}
+              className="px-3.5 py-2 text-text-light hover:text-text-main hover:bg-white transition-colors"
+            >
+              <Plus size={16} />
+            </button>
+          </div>
         </div>
       </div>
-
-      {/* Document content */}
-      <div className="flex-1 p-6 overflow-y-auto bg-white font-body leading-relaxed terminal-border-inset">
-        <div className={`${getZoomClass()} text-black whitespace-pre-wrap`}>
-          {renderHighlightedContent(doc.content, searchQuery)}
-        </div>
-      </div>
-
-      {/* Pane footer info */}
-      <div className="p-2 border-t border-black bg-lavender-light/30 font-mono text-[10px] text-steel-dark text-center select-none">
-        <span>file buffer contents • char count: {doc.content.length}</span>
-      </div>
-    </div>
+    </motion.div>
   );
 }

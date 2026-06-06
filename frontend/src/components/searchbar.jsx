@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { Search, Terminal } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Search, ArrowRight } from 'lucide-react';
 
 export default function SearchBar({ onSearch, initialValue = '' }) {
   const [query, setQuery] = useState(initialValue);
+  const [isFocused, setIsFocused] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -11,31 +13,36 @@ export default function SearchBar({ onSearch, initialValue = '' }) {
 
   return (
     <form onSubmit={handleSubmit} className="w-full">
-      <div className="terminal-border bg-white flex items-center p-3 gap-3">
-        <div className="flex items-center gap-1.5 font-mono text-brand-dark shrink-0">
-          <Terminal size={18} className="text-black" />
-          <span>guest@findit:~$ search</span>
-        </div>
+      <motion.div
+        animate={{
+          boxShadow: isFocused
+            ? '0 12px 40px rgba(0,0,0,.04), 0 0 0 4px rgba(0,0,0,.04)'
+            : '0 1px 4px rgba(0,0,0,0.03)',
+        }}
+        transition={{ duration: 0.2 }}
+        className="h-[72px] bg-white/75 backdrop-blur-md rounded-full flex items-center px-6 gap-4 border border-black/[0.08]"
+      >
+        <Search size={22} className="text-text-light shrink-0" />
         
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="type search keywords here..."
-          className="flex-1 bg-transparent border-none outline-none font-mono text-black placeholder-steel-dark/50"
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          placeholder="search across your documents, notes and knowledge..."
+          className="flex-1 bg-transparent border-none outline-none text-[15px] text-text-main placeholder:text-text-light font-medium"
         />
 
-        <button
+        <motion.button
           type="submit"
-          className="terminal-button bg-steel-medium hover:bg-steel-dark text-black px-4 py-1.5 font-mono font-bold flex items-center gap-2 text-sm shrink-0"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="p-2 flex items-center justify-center text-[#0a0908] transition-all shrink-0 hover:opacity-70"
         >
-          <Search size={14} />
-          <span>execute</span>
-        </button>
-      </div>
-      <div className="mt-1.5 px-3 flex gap-2 text-xs font-mono text-steel-dark">
-        <span>tips: try queries like "normalization", "deadlock", "tcp connection", or "resume"</span>
-      </div>
+          <Search size={22} />
+        </motion.button>
+      </motion.div>
     </form>
   );
 }

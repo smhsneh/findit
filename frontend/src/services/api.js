@@ -202,7 +202,7 @@ const generateHighlightSnippet = (content, queryTokens) => {
   snippetWords = snippetWords.map(word => {
     const cleanWord = word.toLowerCase().replace(/[^\w]/g, '');
     if (queryTokens.includes(cleanWord)) {
-      return `<mark class="bg-steel-medium/40 border-b border-black font-semibold text-black">${word}</mark>`;
+      return `<mark class="highlight-mark">${word}</mark>`;
     }
     return word;
   });

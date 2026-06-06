@@ -1,18 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  getDocuments, 
-  searchDocuments, 
-  getSearchHistory, 
-  getStats, 
-  deleteDocument,
-  tokenize
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  getDocuments,
+  searchDocuments,
+  getSearchHistory,
+  getStats,
+  deleteDocument
 } from '../services/api';
 import SearchBar from '../components/searchbar';
 import UploadPanel from '../components/uploadpanel';
 import ResultsList from '../components/resultslist';
 import PreviewPane from '../components/previewpane';
-import SearchHistory from '../components/searchhistory';
-import { Database, FileText, BarChart3, Trash2, Cpu, RefreshCw } from 'lucide-react';
+import {
+  FileText,
+  Layers,
+  Search,
+  Clock,
+  Upload,
+  ChevronDown,
+  X,
+  History,
+  User
+} from 'lucide-react';
 
 export default function Home() {
   const [query, setQuery] = useState('');
@@ -21,204 +30,305 @@ export default function Home() {
   const [history, setHistory] = useState([]);
   const [stats, setStats] = useState({ totalDocs: 0, totalTerms: 0, totalSearches: 0 });
   const [selectedDocId, setSelectedDocId] = useState(null);
+  const [showUploadDrawer, setShowUploadDrawer] = useState(false);
+  const [activeTab, setActiveTab] = useState('search');
 
-  // load all data from mock search engine
   const refreshData = () => {
     setDocuments(getDocuments());
     setHistory(getSearchHistory());
     setStats(getStats());
   };
 
-  useEffect(() => {
-    refreshData();
-  }, []);
+  useEffect(() => { refreshData(); }, []);
 
-  // handle execution of search query
   const handleSearch = (searchQuery) => {
     setQuery(searchQuery);
-    if (!searchQuery.trim()) {
-      setResults([]);
-      return;
-    }
+    if (!searchQuery.trim()) { setResults([]); return; }
     const searchResults = searchDocuments(searchQuery);
     setResults(searchResults);
-    refreshData(); // update stats and history logs
-    
-    // auto select the highest scoring match if any results
-    if (searchResults.length > 0) {
-      setSelectedDocId(searchResults[0].id);
-    }
+    refreshData();
+    if (searchResults.length > 0) setSelectedDocId(searchResults[0].id);
   };
 
-  // handle quick search from history
-  const handleSelectQuery = (historyQuery) => {
-    handleSearch(historyQuery);
-  };
-
-  // delete document handler
   const handleDeleteDoc = (docId) => {
     deleteDocument(docId);
-    if (selectedDocId === docId) {
-      setSelectedDocId(null);
-    }
+    if (selectedDocId === docId) setSelectedDocId(null);
     refreshData();
-    // re-run search if query is active
-    if (query) {
-      const searchResults = searchDocuments(query);
-      setResults(searchResults);
-    }
+    if (query) setResults(searchDocuments(query));
   };
 
-  // get selected document detail
+  const handleSelectQuery = (q) => handleSearch(q);
+  const handleClearHistory = () => { /* could clear history */ };
+
   const selectedDoc = documents.find(d => d.id === selectedDocId);
 
   return (
-    <div className="min-h-screen bg-lavender-light flex flex-col p-4 sm:p-6 lg:p-8 font-body">
-      {/* Top Header navbar */}
-      <header className="border-2 border-black bg-white p-4 mb-6 flex justify-between items-center shadow-[4px_4px_0px_0px_#000000] select-none">
-        <div className="flex items-center gap-2.5">
-          <div className="p-2 bg-brand-dark text-[#e6e6fa] border border-black rounded-none flex items-center justify-center">
-            <Database size={20} />
-          </div>
-          <div className="flex flex-col">
-            <h1 className="font-header text-xl sm:text-2xl text-black tracking-wider leading-none">
-              findit
-            </h1>
-            <span className="font-mono text-[9px] sm:text-[10px] text-steel-dark font-semibold">
-              intelligent inverted index document search engine
-            </span>
-          </div>
-        </div>
-        <div className="font-mono text-xs text-black border border-black px-2.5 py-1 bg-lavender hidden sm:flex items-center gap-1.5 font-bold">
-          <Cpu size={12} />
-          <span>core status: online</span>
-        </div>
-      </header>
-
-      {/* Main Grid Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 items-start">
-        {/* Left Sidebar - spans 3 columns on large screens */}
-        <aside className="lg:col-span-3 flex flex-col gap-6">
-          {/* Stats Box */}
-          <div className="terminal-border p-4 bg-white flex flex-col gap-3">
-            <div className="flex items-center gap-2 border-b border-black pb-1.5 font-mono text-xs font-bold text-black select-none">
-              <BarChart3 size={14} className="text-black" />
-              <span>index statistics</span>
-            </div>
-            
-            <div className="grid grid-cols-3 gap-2 text-center font-mono">
-              <div className="border border-black p-2 bg-lavender-light/40">
-                <div className="text-sm font-bold text-black leading-none">{stats.totalDocs}</div>
-                <div className="text-[9px] text-steel-dark mt-1">documents</div>
-              </div>
-              <div className="border border-black p-2 bg-lavender-light/40">
-                <div className="text-sm font-bold text-black leading-none">
-                  {stats.totalTerms.toLocaleString()}
-                </div>
-                <div className="text-[9px] text-steel-dark mt-1">terms</div>
-              </div>
-              <div className="border border-black p-2 bg-lavender-light/40">
-                <div className="text-sm font-bold text-black leading-none">
-                  {stats.totalSearches.toLocaleString()}
-                </div>
-                <div className="text-[9px] text-steel-dark mt-1">queries</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Upload Documents Box */}
-          <div className="terminal-border p-4 bg-white flex flex-col gap-3">
-            <div className="font-mono text-xs font-bold text-black border-b border-black pb-1.5 select-none">
-              upload document
-            </div>
-            <UploadPanel onUploadComplete={refreshData} />
-          </div>
-
-          {/* Document list box */}
-          <div className="terminal-border p-4 bg-white flex flex-col gap-2.5">
-            <div className="flex items-center justify-between border-b border-black pb-1.5 font-mono text-xs font-bold text-black select-none">
-              <span>indexed files</span>
-              <button 
-                onClick={refreshData}
-                className="text-[9px] underline text-steel-dark hover:text-black flex items-center gap-0.5"
-              >
-                <RefreshCw size={8} />
-                <span>refresh</span>
-              </button>
-            </div>
-            
-            <div className="flex flex-col gap-1.5 max-h-[160px] overflow-y-auto font-mono text-xs">
-              {documents.map((doc) => (
-                <div
-                  key={doc.id}
-                  onClick={() => setSelectedDocId(doc.id)}
-                  className={`flex justify-between items-center p-1.5 hover:bg-lavender-light cursor-pointer group text-black ${
-                    selectedDocId === doc.id ? 'bg-lavender border border-black' : ''
-                  }`}
+    <div className="min-h-screen font-body">
+      {/* ── Upload Slide-Over Drawer ── */}
+      <AnimatePresence>
+        {showUploadDrawer && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/10 backdrop-blur-[2px] z-40"
+              onClick={() => setShowUploadDrawer(false)}
+            />
+            <motion.aside
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+              className="fixed right-0 top-0 h-full w-full max-w-md bg-white shadow-2xl z-50 flex flex-col"
+            >
+              <div className="flex items-center justify-between p-6 border-b border-border">
+                <h2 className="text-xl font-semibold text-text-main">upload document</h2>
+                <button
+                  onClick={() => setShowUploadDrawer(false)}
+                  className="p-2 rounded-btn text-text-muted hover:text-text-main hover:bg-background transition-colors"
                 >
-                  <div className="flex items-center gap-1.5 min-w-0">
-                    <FileText size={12} className="text-steel-dark group-hover:text-black shrink-0" />
-                    <span className="truncate">{doc.fileName}</span>
-                  </div>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDeleteDoc(doc.id);
-                    }}
-                    className="opacity-0 group-hover:opacity-100 hover:text-red-600 p-0.5 text-black"
-                  >
-                    <Trash2 size={10} />
-                  </button>
-                </div>
-              ))}
+                  <X size={20} />
+                </button>
+              </div>
+              <div className="flex-1 p-6 overflow-y-auto">
+                <UploadPanel onUploadComplete={() => {
+                  refreshData();
+                  setTimeout(() => setShowUploadDrawer(false), 1800);
+                }} />
+              </div>
+            </motion.aside>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* ── Top Navigation ── */}
+      <nav className="pt-8 pb-4 h-auto min-h-[88px] max-w-container mx-auto px-8 flex items-center justify-between">
+        {/* Brand */}
+        <div className="flex flex-col">
+          <span className="font-header text-[34px] font-bold text-text-main tracking-[-0.03em] leading-none">
+            findit
+          </span>
+          <span className="text-[13px] text-text-muted font-medium mt-1">
+            intelligent document search & indexing
+          </span>
+        </div>
+
+        {/* Nav Links */}
+        <div className="hidden md:flex items-center gap-8">
+          <button 
+            onClick={() => setActiveTab('search')}
+            className={`text-[15px] font-semibold pb-1 border-b-2 transition-all ${activeTab === 'search' ? 'text-[#3f303d] border-[#3f303d]' : 'text-text-muted border-transparent hover:text-[#3f303d]'}`}
+          >
+            search
+          </button>
+          <button 
+            onClick={() => setActiveTab('documents')}
+            className={`text-[15px] font-semibold pb-1 border-b-2 transition-all ${activeTab === 'documents' ? 'text-[#3f303d] border-[#3f303d]' : 'text-text-muted border-transparent hover:text-[#3f303d]'}`}
+          >
+            documents
+          </button>
+        </div>
+
+        {/* Right Actions */}
+        <div className="flex items-center gap-4">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setShowUploadDrawer(true)}
+            className="px-3 py-2 flex items-center justify-center text-[#0a0908] hover:opacity-70 transition-all gap-2"
+          >
+            <Upload size={20} />
+            <span className="font-semibold text-[15px]">upload</span>
+          </motion.button>
+
+          <div className="flex items-center gap-2 cursor-pointer group p-2 hover:opacity-70 transition-opacity">
+            <div className="flex items-center justify-center text-[#0a0908]">
+              <User size={22} />
             </div>
+            <ChevronDown size={16} className="text-[#0a0908]" />
           </div>
+        </div>
+      </nav>
 
-          {/* History widget */}
-          <SearchHistory history={history} onSelectQuery={handleSelectQuery} />
-        </aside>
+      {/* ── Page Content ── */}
+      <div className="max-w-container mx-auto px-8 pb-12 flex flex-col gap-8">
 
-        {/* Center Panel (Search + Results) - spans 5 columns */}
-        <main className="lg:col-span-5 flex flex-col gap-6 h-full">
-          <div className="terminal-border p-4 bg-white flex flex-col gap-4">
+        {activeTab === 'search' ? (
+          <>
+            {/* Hero Search */}
+        <div className="flex justify-center pt-2 pb-2">
+          <div className="w-full max-w-[1000px]">
             <SearchBar onSearch={handleSearch} initialValue={query} />
           </div>
-
-          <div className="terminal-border p-4 bg-white flex-1 min-h-[400px]">
-            {query ? (
-              <ResultsList
-                results={results}
-                selectedDocId={selectedDocId}
-                onSelectDoc={setSelectedDocId}
-              />
-            ) : (
-              <div className="h-full flex flex-col items-center justify-center text-center p-8 gap-3 min-h-[350px] select-none">
-                <Database size={36} className="text-steel-dark" />
-                <h3 className="font-header text-sm text-black">search standby mode</h3>
-                <p className="font-mono text-xs text-steel-dark max-w-xs leading-relaxed">
-                  input query above to scan the inverted index and compute tf-idf document relevance scores.
-                </p>
-              </div>
-            )}
-          </div>
-        </main>
-
-        {/* Right Panel (Document Preview) - spans 4 columns */}
-        <section className="lg:col-span-4 h-full">
-          <PreviewPane
-            doc={selectedDoc}
-            searchQuery={query}
-            onDeleteDoc={handleDeleteDoc}
-          />
-        </section>
-      </div>
-
-      {/* Footer copyright */}
-      <footer className="border-t border-black/10 mt-12 py-6 text-center select-none">
-        <div className="font-mono text-[10px] text-steel-dark">
-          <span>findit document search engine • made by smhsneh • run execution complete [ok]</span>
         </div>
-      </footer>
+
+        {/* Stats Row */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white/75 backdrop-blur-md border border-[#e9d5e6] rounded-2xl p-6 shadow-[0_1px_4px_rgba(0,0,0,0.03)] flex items-center gap-4"
+          >
+            <div className="w-12 h-12 rounded-[24px] bg-[#e9d5e6]/30 flex items-center justify-center shrink-0 text-[#0a0908]">
+              <FileText size={22} />
+            </div>
+            <div className="flex flex-col min-w-0">
+              <span className="text-[32px] font-bold font-header leading-none text-text-main truncate">{stats.totalDocs}</span>
+              <span className="text-[13px] text-text-muted font-medium mt-1">documents</span>
+              <span className="text-[11px] text-text-light">total uploaded</span>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-[#e9d5e6]/80 backdrop-blur-md border border-[#e9d5e6]/50 rounded-2xl p-6 shadow-[0_1px_4px_rgba(0,0,0,0.03)] flex items-center gap-4"
+          >
+            <div className="w-12 h-12 rounded-[24px] bg-[#3f303d]/10 flex items-center justify-center shrink-0 text-[#3f303d]">
+              <Layers size={22} />
+            </div>
+            <div className="flex flex-col min-w-0">
+              <span className="text-[32px] font-bold font-header leading-none text-[#3f303d] truncate">{stats.totalTerms.toLocaleString()}</span>
+              <span className="text-[13px] text-[#3f303d] font-medium mt-1">indexed terms</span>
+              <span className="text-[11px] text-[#3f303d]">across all documents</span>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white/75 backdrop-blur-md border border-[#e9d5e6] rounded-2xl p-6 shadow-[0_1px_4px_rgba(0,0,0,0.03)] flex items-center gap-4"
+          >
+            <div className="w-12 h-12 rounded-[24px] bg-[#e9d5e6]/30 flex items-center justify-center shrink-0 text-[#0a0908]">
+              <Search size={22} />
+            </div>
+            <div className="flex flex-col min-w-0">
+              <span className="text-[32px] font-bold font-header leading-none text-text-main truncate">{stats.totalSearches.toLocaleString()}</span>
+              <span className="text-[13px] text-text-muted font-medium mt-1">total searches</span>
+              <span className="text-[11px] text-text-light">queries performed</span>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-[#e9d5e6]/80 backdrop-blur-md border border-[#e9d5e6]/50 rounded-2xl p-6 shadow-[0_1px_4px_rgba(0,0,0,0.03)] flex items-center gap-4"
+          >
+            <div className="w-12 h-12 rounded-[24px] bg-[#3f303d]/10 flex items-center justify-center shrink-0 text-[#3f303d]">
+              <Clock size={22} />
+            </div>
+            <div className="flex flex-col min-w-0">
+              <span className="text-lg font-bold font-header leading-tight text-[#3f303d] truncate">
+                {history.length > 0 ? history[0].query : '—'}
+              </span>
+              <span className="text-[13px] text-[#3f303d] font-medium mt-1">recent search</span>
+              <span className="text-[11px] text-[#3f303d]">
+                {history.length > 0 ? '2 minutes ago' : 'no searches yet'}
+              </span>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Recent Searches Moved Here */}
+        {history.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.25 }}
+            className="flex items-center justify-center gap-4 pt-4 pb-4 flex-wrap"
+          >
+            <span className="text-[13px] text-text-muted font-semibold shrink-0">recent searches</span>
+            <div className="flex items-center gap-3 flex-wrap">
+              {history.map((item, idx) => (
+                <motion.button
+                  key={idx}
+                  whileHover={{ y: -2 }}
+                  onClick={() => handleSelectQuery(item.query)}
+                  className="bg-white text-graphite text-[13px] font-medium px-4 py-2.5 rounded-full shadow-[0_4px_12px_rgba(0,0,0,.03)] border border-stormy-teal/20 hover:shadow-soft transition-shadow flex items-center gap-2 group"
+                >
+                  <History size={12} className="text-text-light" />
+                  <span>{item.query}</span>
+                </motion.button>
+              ))}
+              <button className="text-[13px] text-text-main font-semibold hover:opacity-70 transition-opacity">
+                clear all
+              </button>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Main Workspace */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-6 items-start min-h-[500px]">
+          {/* Results Panel */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25 }}
+            className="bg-white/75 backdrop-blur-md rounded-2xl p-6 shadow-[0_1px_4px_rgba(0,0,0,0.03)] min-h-[500px] border border-black/[0.08]"
+          >
+            <ResultsList
+              results={results}
+              query={query}
+              selectedDocId={selectedDocId}
+              onSelectDoc={setSelectedDocId}
+            />
+          </motion.div>
+
+          {/* Preview Panel */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <PreviewPane
+              doc={selectedDoc}
+              searchQuery={query}
+              onDeleteDoc={handleDeleteDoc}
+            />
+          </motion.div>
+        </div>
+          </>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="w-full max-w-4xl mx-auto flex flex-col gap-6 pt-8 min-h-[500px]"
+          >
+            <h2 className="text-[28px] font-bold font-header text-text-main">all documents</h2>
+            <div className="bg-white/75 backdrop-blur-md rounded-2xl p-6 shadow-[0_1px_4px_rgba(0,0,0,0.03)] border border-[#e9d5e6]">
+              <div className="flex flex-col gap-4">
+                {documents.map(doc => (
+                  <div key={doc.id} className="flex items-center justify-between p-4 rounded-xl border border-black/[0.08] hover:bg-black/[0.02] transition-colors">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-[24px] bg-[#e9d5e6]/30 flex items-center justify-center text-[#0a0908]">
+                        <FileText size={20} />
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="font-semibold text-[16px] text-text-main font-header">{doc.fileName}</span>
+                        <span className="text-[13px] text-text-muted mt-0.5">{doc.type || 'pdf'} document</span>
+                      </div>
+                    </div>
+                    <button onClick={() => handleDeleteDoc(doc.id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+                       <X size={18} />
+                    </button>
+                  </div>
+                ))}
+                {documents.length === 0 && (
+                  <div className="text-center py-16 text-[15px] font-medium text-text-muted">
+                    no documents uploaded yet.
+                  </div>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Footer */}
+        <footer className="text-center pt-8 pb-4 text-[13px] text-text-muted font-medium">
+          made by smhsneh
+        </footer>
+      </div>
     </div>
   );
 }

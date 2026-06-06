@@ -1,76 +1,67 @@
 import React from 'react';
-import { FileText, Cpu, ChevronRight } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { MoreVertical } from 'lucide-react';
 
-export default function ResultCard({ result, isActive, onClick }) {
-  const getFileIconColor = (type) => {
+export default function ResultCard({ result, isActive, onClick, index = 0 }) {
+  const matchPercentage = Math.min(Math.round((result.score || 0.5) * 100), 99);
+
+  const getFileTag = (type) => {
     switch (type) {
-      case 'pdf': return 'bg-[#2c4f7c]/10 text-[#2c4f7c] border-[#2c4f7c]';
-      case 'docx': return 'bg-steel-dark/15 text-steel-dark border-steel-dark';
-      default: return 'bg-steel-light/30 text-black border-black';
+      case 'pdf':  return { label: 'pdf',  bg: 'bg-red-50',   text: 'text-red-600' };
+      case 'docx': return { label: 'docx', bg: 'bg-blue-50',  text: 'text-blue-600' };
+      case 'txt':  return { label: 'txt',  bg: 'bg-slate-100', text: 'text-slate-600' };
+      default:     return { label: 'doc',  bg: 'bg-slate-100', text: 'text-slate-500' };
     }
   };
 
-  // build a visual score gauge bar
-  const renderScoreGauge = (score) => {
-    const bars = 10;
-    const filled = Math.max(1, Math.round(score * bars));
-    let gauge = '';
-    for (let i = 0; i < bars; i++) {
-      gauge += i < filled ? '■' : '□';
-    }
-    return (
-      <span className="font-mono text-xs hidden sm:inline ml-2 text-brand-dark/80">
-        [{gauge}]
-      </span>
-    );
-  };
+  const tag = getFileTag(result.fileType);
 
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.04, duration: 0.2 }}
+      whileHover={{ y: -2 }}
       onClick={onClick}
-      className={`terminal-border-sm p-4 bg-white hover:bg-lavender-light cursor-pointer transition-all flex flex-col gap-2 ${
-        isActive ? 'ring-2 ring-black bg-lavender-light' : ''
+      className={`rounded-card p-6 cursor-pointer transition-all duration-200 ${
+        isActive
+          ? 'border border-stormy-teal/20 shadow-card-hover bg-white'
+          : 'border border-transparent hover:border-border bg-white hover:shadow-soft'
       }`}
+      style={isActive ? {} : { border: '1px solid transparent' }}
     >
-      <div className="flex items-start justify-between gap-2 border-b border-dashed border-black/30 pb-2">
-        <div className="flex items-center gap-2">
-          <div className={`p-1.5 border border-black ${getFileIconColor(result.fileType)}`}>
-            <FileText size={16} />
+      <div className="flex items-start justify-between gap-4">
+        {/* Left: Info */}
+        <div className="flex flex-col gap-2 flex-1 min-w-0">
+          <h3 className="text-[18px] font-bold font-header text-text-main leading-snug">
+            {result.fileName.replace(/\.[^.]+$/, '').replace(/_/g, ' ').toLowerCase()}
+          </h3>
+
+          <div className="flex items-center gap-2 text-[13px] font-medium text-text-muted flex-wrap">
+            <span className={`px-2.5 py-0.5 rounded-full text-[12px] font-semibold ${tag.bg} ${tag.text}`}>
+              {tag.label}
+            </span>
+            <span>page 14</span>
+            <span className="text-text-light">•</span>
+            <span>{result.matchCount} matches</span>
           </div>
-          <div className="flex flex-col">
-            <span className="font-header text-sm text-black font-bold">
-              {result.fileName}
-            </span>
-            <span className="text-[10px] text-steel-dark font-mono">
-              type: {result.fileType} • matches: {result.matchCount}
-            </span>
+
+          <div className="text-[14px] text-text-muted leading-relaxed mt-1">
+            <span dangerouslySetInnerHTML={{ __html: result.snippet }} />
           </div>
         </div>
-        <div className="flex flex-col items-end shrink-0 font-mono text-right">
-          <div className="flex items-center gap-1">
-            <Cpu size={12} className="text-black" />
-            <span className="text-xs font-bold text-black">
-              score: {result.score.toFixed(4)}
-            </span>
+
+        {/* Right: Score + Options */}
+        <div className="flex items-start gap-3 shrink-0">
+          <div className="bg-sky-100 rounded-[18px] px-4 py-3 text-center min-w-[60px]">
+            <span className="text-lg font-bold text-sky-900 leading-none">{matchPercentage}%</span>
+            <div className="text-[10px] text-sky-900/70 font-semibold mt-1">relevance</div>
           </div>
-          {renderScoreGauge(result.score)}
+          <button className="text-text-light hover:text-text-muted p-1 mt-1 transition-colors">
+            <MoreVertical size={16} />
+          </button>
         </div>
       </div>
-
-      <div className="text-xs text-black leading-relaxed font-body font-normal">
-        <span 
-          dangerouslySetInnerHTML={{ __html: result.snippet }} 
-          className="text-black"
-        />
-      </div>
-
-      <div className="flex justify-between items-center text-[10px] text-steel-dark/70 font-mono mt-1 pt-1 border-t border-dashed border-black/10">
-        <span>indexed: {new Date(result.uploadedAt).toLocaleDateString().toLowerCase()}</span>
-        <span className="flex items-center text-brand-dark font-bold">
-          <span>preview document</span>
-          <ChevronRight size={10} />
-        </span>
-      </div>
-    </div>
+    </motion.div>
   );
 }
