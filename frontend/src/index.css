@@ -71,3 +71,17 @@ mark,
 ::-webkit-scrollbar-track  { background: transparent; }
 ::-webkit-scrollbar-thumb  { background: #E5E7EB; border-radius: 9999px; }
 ::-webkit-scrollbar-thumb:hover { background: #D1D5DB; }
+
+/* ── Landing Page Styles ── */
+.landing-gradient {
+  background: #ffffff;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 1) 0%, rgba(233, 213, 230, 1) 33%, rgba(194, 141, 193, 1) 96%);
+}
+
+.glass-landing-card {
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(24px) saturate(1.2);
+  -webkit-backdrop-filter: blur(24px) saturate(1.2);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.05);
+}
