@@ -5,8 +5,8 @@
 @layer base {
   body {
     font-family: "Inter", sans-serif;
-    color: #353535;
-    background: #FFFFFF;
+    color: #FFFFFF;
+    background: #0a1128 url('/bg2.png') center/cover no-repeat fixed;
     min-height: 100vh;
     overflow-x: hidden;
   }
@@ -49,21 +49,46 @@ mark,
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
 }
 
-/* ── Plum Tinted Glass (for primary actions) ── */
-.glass-teal {
-  background: linear-gradient(135deg, rgba(233, 213, 230, 0.4) 0%, rgba(233, 213, 230, 0.25) 100%);
+/* ── Blue Tinted Glass (for primary actions) ── */
+.glass-blue {
+  background: linear-gradient(135deg, rgba(0, 31, 84, 0.15) 0%, rgba(0, 31, 84, 0.05) 100%);
   backdrop-filter: blur(16px) saturate(1.4);
   -webkit-backdrop-filter: blur(16px) saturate(1.4);
-  border: 1px solid rgba(233, 213, 230, 0.6);
+  border: 1px solid rgba(0, 31, 84, 0.2);
   box-shadow:
-    0 2px 16px rgba(63, 48, 61, 0.04),
+    0 2px 16px rgba(0, 31, 84, 0.04),
     inset 0 1px 0 rgba(255, 255, 255, 0.5);
-  color: #3f303d;
+  color: #0a1128;
   transition: all 0.2s ease;
 }
-.glass-teal:hover {
-  background: linear-gradient(135deg, rgba(233, 213, 230, 0.5) 0%, rgba(233, 213, 230, 0.35) 100%);
-  box-shadow: 0 4px 20px rgba(63, 48, 61, 0.08);
+.glass-blue:hover {
+  background: rgba(255, 255, 255, 0.6);
+  border-bottom: 2px solid rgba(10, 17, 40, 0.15);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 12px 40px -12px rgba(0, 0, 0, 0.2);
+}
+
+/* ── Navy Tinted Glass (for dark cards) ── */
+.glass-navy {
+  background: linear-gradient(135deg, rgba(3, 64, 120, 0.8) 0%, rgba(3, 64, 120, 0.5) 100%);
+  backdrop-filter: blur(24px) saturate(1.5);
+  -webkit-backdrop-filter: blur(24px) saturate(1.5);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow:
+    0 8px 32px rgba(3, 64, 120, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  color: #fefcfb;
+  transition: all 0.2s ease;
+}
+.glass-navy:hover {
+  background: linear-gradient(135deg, rgba(3, 64, 120, 0.85) 0%, rgba(3, 64, 120, 0.6) 100%);
+  box-shadow: 0 12px 40px rgba(3, 64, 120, 0.35);
 }
 
 /* ── Scrollbar ── */

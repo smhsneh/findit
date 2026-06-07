@@ -3,7 +3,9 @@ import { motion } from 'framer-motion';
 import { MoreVertical } from 'lucide-react';
 
 export default function ResultCard({ result, isActive, onClick, index = 0 }) {
-  const matchPercentage = Math.min(Math.round((result.score || 0.5) * 100), 99);
+  // Scale the raw TF-IDF score (which is typically very small) up to a 0-99 percentage
+  const rawScore = result.score ?? 0;
+  const matchPercentage = rawScore === 0 ? 0 : Math.min(Math.round(rawScore * 1000), 99);
 
   const getFileTag = (type) => {
     switch (type) {
@@ -41,8 +43,6 @@ export default function ResultCard({ result, isActive, onClick, index = 0 }) {
             <span className={`px-2.5 py-0.5 rounded-full text-[12px] font-semibold ${tag.bg} ${tag.text}`}>
               {tag.label}
             </span>
-            <span>page 14</span>
-            <span className="text-text-light">•</span>
             <span>{result.matchCount} matches</span>
           </div>
 

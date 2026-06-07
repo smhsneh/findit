@@ -1,8 +1,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
-export default function Landing({ onEnter }) {
+export default function Landing() {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen w-full flex flex-col text-text-main overflow-hidden bg-white font-body">
       {/* Top Section - Background Image */}
@@ -80,7 +83,7 @@ export default function Landing({ onEnter }) {
             className="flex"
           >
             <button 
-              onClick={onEnter}
+              onClick={() => navigate('/dashboard')}
               className="flex items-center gap-2 text-[24px] md:text-[28px] font-semibold font-header text-text-main hover:opacity-70 transition-opacity group"
             >
               <span>try now</span>

@@ -15,7 +15,7 @@ export default function ResultsList({ results, query, selectedDocId, onSelectDoc
   if (!query) {
     return (
       <div className="flex flex-col items-center justify-center text-center py-20 gap-4 select-none min-h-[400px]">
-        <div className="w-16 h-16 rounded-2xl bg-background flex items-center justify-center text-text-light">
+        <div className="w-16 h-16 rounded-2xl bg-[#0a1128]/10 flex items-center justify-center text-text-main">
           <AlertCircle size={28} />
         </div>
         <h3 className="text-lg font-semibold text-text-main">ready to search</h3>
@@ -38,7 +38,7 @@ export default function ResultsList({ results, query, selectedDocId, onSelectDoc
               onClick={() => setActiveFilter(filter)}
               className={`h-10 px-4 rounded-full text-[13px] font-bold font-header transition-all ${
                 activeFilter === filter
-                  ? 'glass-teal shadow-sm'
+                  ? 'glass-blue shadow-sm'
                   : 'bg-background text-graphite hover:bg-dust-grey/50 border border-transparent'
               }`}
             >
@@ -49,13 +49,9 @@ export default function ResultsList({ results, query, selectedDocId, onSelectDoc
 
         {/* Sort/Filter */}
         <div className="flex items-center gap-4 text-[13px] text-text-muted font-medium">
-          <button className="flex items-center gap-1.5 hover:text-text-main transition-colors">
-            sort by: <span className="text-text-main font-semibold">relevance</span>
-            <ChevronDown size={14} />
-          </button>
-          <button className="flex items-center gap-1.5 hover:text-text-main transition-colors">
-            <SlidersHorizontal size={14} />
-          </button>
+          <span className="flex items-center gap-1.5 text-text-muted">
+            sorted by: <span className="text-text-main font-semibold">relevance</span>
+          </span>
         </div>
       </div>
 
