@@ -10,5 +10,9 @@ export function tokenize(text) {
   if (!text) return [];
   // tokenizeAndStem automatically lowercases, removes punctuation,
   // removes stop words, and applies the Porter Stemming algorithm.
-  return natural.PorterStemmer.tokenizeAndStem(text);
+  const tokens = natural.PorterStemmer.tokenizeAndStem(text);
+  
+  // Filter out random artifacts (numbers, single letters, weird encodings)
+  // Keep only strictly alphabetical tokens that are 2+ characters
+  return tokens.filter(token => /^[a-z]{2,}$/.test(token));
 }

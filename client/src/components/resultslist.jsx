@@ -39,7 +39,7 @@ export default function ResultsList({ results, query, selectedDocId, onSelectDoc
               className={`h-10 px-4 rounded-full text-[13px] font-bold font-header transition-all ${
                 activeFilter === filter
                   ? 'glass-blue shadow-sm'
-                  : 'bg-background text-graphite hover:bg-dust-grey/50 border border-transparent'
+                  : 'bg-[#0a1128]/5 text-text-muted hover:bg-[#0a1128]/10 hover:text-text-main border border-transparent'
               }`}
             >
               {filter}

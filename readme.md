@@ -17,6 +17,10 @@
 
 <br/>
 
+**[live app](https://finditbysneh.vercel.app)**
+
+<br/>
+
 </div>
 
 ---
@@ -103,7 +107,7 @@ login → jwt generated → stored in context → private requests authenticated
 
 ### 1. clone the repository
 ```bash
-git clone <your_repo_url>
+git clone https://github.com/smhsneh/findit.git
 cd findit
 ```
 
