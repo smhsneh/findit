@@ -18,14 +18,14 @@ export default {
         'dust-grey': '#0a1128', // Mapping to Deep Navy
         
         surface: '#ffffff',
-        background: '#0a1128', // Prussian Blue background
-        border: 'rgba(10, 17, 40, 0.15)', // Prussian Blue borders
-        'text-main': '#0a1128', // Prussian Blue text
-        'text-muted': 'rgba(10, 17, 40, 0.7)', // Prussian Blue secondary
-        'text-light': 'rgba(10, 17, 40, 0.5)', // Prussian Blue lightest
+        background: '#000000', 
+        border: 'rgba(0, 0, 0, 0.1)', 
+        'text-main': '#000000', 
+        'text-muted': 'rgba(0, 0, 0, 0.6)', 
+        'text-light': 'rgba(0, 0, 0, 0.4)',
       },
       fontFamily: {
-        header: ['"Martian Mono"', 'monospace'],
+        header: ['"Bricolage Grotesque"', 'sans-serif'],
         body: ['"Inter"', 'sans-serif'],
       },
       borderRadius: {

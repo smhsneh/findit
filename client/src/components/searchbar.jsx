@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Search, ArrowRight } from 'lucide-react';
+import { ChevronRight, Search } from 'lucide-react';
 
 export default function SearchBar({ onSearch, initialValue = '' }) {
   const [query, setQuery] = useState(initialValue);
@@ -12,33 +12,25 @@ export default function SearchBar({ onSearch, initialValue = '' }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="w-full">
+    <form onSubmit={handleSubmit} className="w-full relative">
       <motion.div
         animate={{
-          borderColor: isFocused ? 'rgba(255, 255, 255, 0.4)' : 'rgba(255, 255, 255, 0.15)'
+          boxShadow: isFocused ? '0 0 0 1px rgba(255, 255, 255, 0.2)' : '0 4px 16px rgba(0, 0, 0, 0.3)'
         }}
-        transition={{ duration: 0.2 }}
-        className="h-[60px] bg-transparent border-b flex items-center px-2 gap-4"
+        className="flex items-center bg-[#252528] rounded-full overflow-hidden transition-all duration-300 px-2 h-14"
       >
-
+        <div className="pl-5 text-[#888888]">
+          <Search size={20} />
+        </div>
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
-          placeholder="search across your documents, notes and knowledge..."
-          className="flex-1 bg-transparent border-none outline-none text-[18px] text-white/90 placeholder:text-white/30 font-medium"
+          placeholder="search"
+          className="flex-1 bg-transparent border-none outline-none text-[15px] text-white/90 placeholder:text-[#888888] font-medium px-4 py-4 pr-6"
         />
-
-        <motion.button
-          type="submit"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="p-2 flex items-center justify-center text-white transition-all shrink-0 hover:opacity-70"
-        >
-          <Search size={22} />
-        </motion.button>
       </motion.div>
     </form>
   );

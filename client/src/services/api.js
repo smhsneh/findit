@@ -1,4 +1,4 @@
-export const API_BASE_URL = 'https://finditapi.onrender.com/api';
+export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
 const getHeaders = () => {
   const headers = {};
@@ -94,6 +94,34 @@ export const deleteDocument = async (id) => {
   }
 };
 
+export const deleteAccount = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/user`, {
+      method: 'DELETE',
+      headers: getHeaders()
+    });
+    if (!response.ok) throw new Error('Failed to delete account');
+    return await response.json();
+  } catch (error) {
+    console.error('API Error (deleteAccount):', error);
+    throw error;
+  }
+};
+
+export const resetIndexedData = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/reset`, {
+      method: 'DELETE',
+      headers: getHeaders()
+    });
+    if (!response.ok) throw new Error('Failed to reset data');
+    return await response.json();
+  } catch (error) {
+    console.error('API Error (resetIndexedData):', error);
+    throw error;
+  }
+};
+
 // Search history uses localStorage and doesn't need auth headers
 export const saveSearchQuery = (query) => {
   if (!query) return;
@@ -114,4 +142,5 @@ export const getSearchHistory = () => {
 
 export const clearSearchHistory = () => {
   localStorage.removeItem('searchHistory');
+  localStorage.removeItem('totalSearches');
 };

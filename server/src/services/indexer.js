@@ -84,20 +84,27 @@ export async function deleteDocumentById(userId, docIdStr) {
   await Document.findOneAndDelete({ _id: docIdStr, userId });
 
   // 2. Remove docId from all terms' postings
-  // This removes the key `postings.docId` from all matching Term documents
   await Term.updateMany(
     { userId },
     { $unset: { [`postings.${docIdStr}`]: 1 } }
   );
 
   // 3. Delete any terms that now have no postings
-  // (We could do this periodically, or check here, but this is a bit tricky in MongoDB.
-  // We can just leave empty postings objects, or clean up terms where postings is empty.)
-  // We'll clean up terms where all keys have been unset, leaving postings as empty object {}
-  // But wait, $unset removes the field inside postings. We might need a script to delete `{ "postings": {} }` later if it becomes an issue.
+  await Term.deleteMany({
+    userId,
+    $or: [
+      { postings: { $exists: false } },
+      { postings: {} }
+    ]
+  });
 }
 
 export async function getAllTerms(userId) {
   const terms = await Term.find({ userId }).select('term').lean();
   return terms.map(t => t.term);
+}
+
+export async function deleteAllDocuments(userId) {
+  await Document.deleteMany({ userId });
+  await Term.deleteMany({ userId });
 }

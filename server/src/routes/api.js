@@ -2,7 +2,7 @@ import express from 'express';
 import multer from 'multer';
 import { extractText } from '../services/parser.js';
 import { tokenize } from '../services/tokenizer.js';
-import { addDocumentToIndex, getAllDocuments, getTotalDocuments, getTotalTerms, deleteDocumentById, getAllTerms } from '../services/indexer.js';
+import { addDocumentToIndex, getAllDocuments, getTotalDocuments, getTotalTerms, deleteDocumentById, getAllTerms, deleteAllDocuments } from '../services/indexer.js';
 import { searchIndex } from '../services/search.js';
 import { authenticateToken } from '../middleware/authMiddleware.js';
 
@@ -99,6 +99,17 @@ router.delete('/documents/:id', async (req, res) => {
   } catch (error) {
     console.error('Delete Error:', error);
     res.status(500).json({ error: 'Failed to delete document' });
+  }
+});
+
+// Reset Indexed Data
+router.delete('/reset', authenticateToken, async (req, res) => {
+  try {
+    await deleteAllDocuments(req.user.userId);
+    res.json({ message: 'All indexed data reset successfully.' });
+  } catch (error) {
+    console.error('Reset error:', error);
+    res.status(500).json({ error: 'Failed to reset indexed data' });
   }
 });
 

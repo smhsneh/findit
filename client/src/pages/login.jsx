@@ -3,10 +3,14 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { API_BASE_URL } from '../services/api';
 import toast from 'react-hot-toast';
+import { motion } from 'framer-motion';
+import { Eye, EyeOff } from 'lucide-react';
+import GlassSurface from '../components/GlassSurface';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -36,41 +40,60 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6">
-      <div className="w-full max-w-md glass-card p-8 rounded-3xl">
-        <h1 className="text-[32px] font-bold font-header text-text-main mb-2">welcome back.</h1>
-        <p className="text-[15px] text-text-muted mb-8">log in to access your knowledge base.</p>
-        
-        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-          <input 
-            type="email" 
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            placeholder="email address" 
-            className="h-12 px-4 rounded-xl border border-black/[0.08] bg-white text-text-main text-[15px] outline-none focus:border-[#002855]/50 focus:shadow-[0_0_0_3px_rgba(0,40,85,0.1)] transition-all"
-            required 
-          />
-          <input 
-            type="password" 
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            placeholder="password" 
-            className="h-12 px-4 rounded-xl border border-black/[0.08] bg-white text-text-main text-[15px] outline-none focus:border-[#002855]/50 focus:shadow-[0_0_0_3px_rgba(0,40,85,0.1)] transition-all"
-            required 
-          />
-          <button 
-            type="submit" 
-            disabled={isLoading}
-            className="h-12 mt-2 rounded-xl bg-[#002855] text-white font-semibold text-[15px] hover:shadow-lg transition-all flex items-center justify-center disabled:opacity-70"
-          >
-            {isLoading ? 'logging in...' : 'log in'}
-          </button>
-        </form>
-        
-        <p className="mt-8 text-center text-[13px] text-text-muted font-medium">
-          don't have an account? <Link to="/signup" className="text-[#002855] hover:underline">sign up here</Link>
-        </p>
-      </div>
+    <div className="min-h-screen font-body relative flex items-center justify-center overflow-hidden bg-black">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="w-full max-w-md relative z-10 px-4"
+      >
+        <div className="relative w-full shadow-2xl rounded-[30px]">
+          <GlassSurface width="100%" height="100%" borderRadius={30} backgroundOpacity={0.1} saturation={1} borderWidth={0.07} brightness={50} opacity={0.93} blur={11} displace={0.5} distortionScale={-180} redOffset={0} greenOffset={10} blueOffset={20}>
+            <div className="p-10 flex flex-col w-full text-white relative z-20">
+              <h1 className="text-[36px] font-bold font-header mb-2 leading-tight">welcome back.</h1>
+              <p className="text-[15px] text-white/70 mb-8 font-sans">log in to access your knowledge base.</p>
+              
+              <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+                <input 
+                  type="email" 
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  placeholder="email address" 
+                  className="h-14 px-5 rounded-2xl border border-white/20 bg-white/10 text-white placeholder-white/50 text-[15px] outline-none focus:border-white/40 focus:bg-white/20 transition-all font-sans"
+                  required 
+                />
+                <div className="relative flex items-center">
+                  <input 
+                    type={showPassword ? "text" : "password"} 
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    placeholder="password" 
+                    className="h-14 px-5 pr-12 w-full rounded-2xl border border-white/20 bg-white/10 text-white placeholder-white/50 text-[15px] outline-none focus:border-white/40 focus:bg-white/20 transition-all font-sans"
+                    required 
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 text-white/50 hover:text-white transition-colors"
+                  >
+                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
+                </div>
+                <button 
+                  type="submit" 
+                  disabled={isLoading}
+                  className="h-14 mt-2 rounded-2xl bg-white text-black font-bold text-[16px] hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:-translate-y-0.5 transition-all flex items-center justify-center disabled:opacity-70 disabled:hover:translate-y-0 font-header"
+                >
+                  {isLoading ? 'logging in...' : 'log in'}
+                </button>
+              </form>
+              
+              <p className="mt-8 text-center text-[14px] text-white/60 font-medium font-sans">
+                don't have an account? <Link to="/signup" className="text-white hover:underline ml-1 font-semibold">sign up here</Link>
+              </p>
+            </div>
+          </GlassSurface>
+        </div>
+      </motion.div>
     </div>
   );
 }

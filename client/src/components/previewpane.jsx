@@ -55,12 +55,12 @@ export default function PreviewPane({ doc, searchQuery, onDeleteDoc }) {
 
   if (!doc) {
     return (
-      <div className="bg-white border border-[#034078]/20 rounded-2xl p-6 min-h-[500px] shadow-[0_4px_24px_rgba(0,0,0,0.04)] flex flex-col items-center justify-center text-center gap-5">
-        <div className="w-16 h-16 rounded-2xl bg-[#0a1128]/10 flex items-center justify-center text-text-main">
+      <div className="bg-[#1C1C1C] border border-white/5 rounded-2xl p-6 min-h-[500px] shadow-sm flex flex-col items-center justify-center text-center gap-5">
+        <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center text-white">
           <FileText size={28} />
         </div>
-        <h3 className="text-lg font-semibold text-text-main">no document selected</h3>
-        <p className="text-sm text-text-muted max-w-sm">
+        <h3 className="text-lg font-semibold text-white">no document selected</h3>
+        <p className="text-sm text-white/70 max-w-sm">
           select a document from the search results to display its contents here.
         </p>
       </div>
@@ -94,10 +94,10 @@ export default function PreviewPane({ doc, searchQuery, onDeleteDoc }) {
 
   const getFileTag = (type) => {
     switch (type) {
-      case 'pdf':  return { label: 'PDF',  bg: 'bg-red-50',   text: 'text-red-600' };
-      case 'docx': return { label: 'DOCX', bg: 'bg-blue-50',  text: 'text-blue-600' };
-      case 'txt':  return { label: 'TXT',  bg: 'bg-slate-100', text: 'text-slate-600' };
-      default:     return { label: 'DOC',  bg: 'bg-slate-100', text: 'text-slate-500' };
+      case 'pdf':  return { label: 'PDF',  bg: 'bg-white/10',   text: 'text-white' };
+      case 'docx': return { label: 'DOCX', bg: 'bg-white/10',  text: 'text-white' };
+      case 'txt':  return { label: 'TXT',  bg: 'bg-white/10', text: 'text-white' };
+      default:     return { label: 'DOC',  bg: 'bg-white/10', text: 'text-white/70' };
     }
   };
 
@@ -115,19 +115,19 @@ export default function PreviewPane({ doc, searchQuery, onDeleteDoc }) {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="bg-white border border-[#034078]/20 rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.04)] flex flex-col min-h-[500px] relative overflow-hidden"
+      className="bg-[#1C1C1C] border border-white/5 rounded-2xl shadow-sm flex flex-col min-h-[500px] relative overflow-hidden"
     >
       <div className="absolute inset-0 overflow-y-auto flex flex-col">
         {/* Header */}
-        <div className="sticky top-0 z-20 flex items-center justify-between p-6 border-b border-[#034078]/10 bg-white">
+        <div className="sticky top-0 z-20 flex items-center justify-between p-6 border-b border-white/5 bg-[#1C1C1C]">
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-3">
-              <h2 className="text-lg font-bold font-header text-text-main">{doc.fileName}</h2>
+              <h2 className="text-lg font-bold font-header text-white">{doc.fileName}</h2>
               <span className={`px-2.5 py-0.5 rounded-full text-[12px] font-semibold ${tag.bg} ${tag.text}`}>
                 {tag.label}
               </span>
             </div>
-            <span className="text-[13px] text-text-muted font-medium">
+            <span className="text-[13px] text-white/70 font-medium">
               page {currentPage + 1} of {totalPages} <span className="mx-1.5">•</span> {searchQuery ? 'matches highlighted' : 'no active search'}
             </span>
           </div>
@@ -135,7 +135,7 @@ export default function PreviewPane({ doc, searchQuery, onDeleteDoc }) {
           <div className="flex items-center gap-2">
             <button 
               onClick={() => onDeleteDoc(doc.id)}
-              className="p-2.5 rounded-btn border border-red-500/20 bg-red-50 text-red-500 hover:text-white hover:bg-red-500 transition-all shadow-sm group"
+              className="p-2.5 rounded-btn border border-white/5 bg-white/5 text-white/70 hover:text-red-500 hover:border-red-500/20 hover:bg-white/10 transition-all shadow-sm group"
               title="Delete Document"
             >
               <Trash2 size={16} className="group-hover:scale-110 transition-transform" />
@@ -146,50 +146,50 @@ export default function PreviewPane({ doc, searchQuery, onDeleteDoc }) {
         {/* Content */}
         <div className="flex-1 p-10">
           <div className="max-w-[70ch]">
-            <h1 className="text-2xl font-bold text-text-main mb-6">{displayName}</h1>
-            <div ref={contentRef} className={`${getZoomSize()} text-text-main leading-[2] font-normal whitespace-pre-wrap`}>
+            <h1 className="text-2xl font-bold text-white mb-6">{displayName}</h1>
+            <div ref={contentRef} className={`${getZoomSize()} text-white/90 leading-[2] font-normal whitespace-pre-wrap`}>
               {renderHighlightedContent(pageContent, searchQuery)}
             </div>
           </div>
         </div>
 
         {/* Footer Controls */}
-        <div className="sticky bottom-0 z-20 flex items-center justify-between px-6 py-4 border-t border-[#034078]/10 bg-white mt-auto">
+        <div className="sticky bottom-0 z-20 flex items-center justify-between px-6 py-4 border-t border-white/5 bg-[#1C1C1C] mt-auto">
           {/* Pagination */}
-          <div className="flex items-center bg-white/90 border border-black/[0.08] rounded-full overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+          <div className="flex items-center bg-white/5 border border-white/10 rounded-full overflow-hidden shadow-sm">
             <button 
               onClick={() => setCurrentPage(p => Math.max(0, p - 1))}
               disabled={currentPage === 0}
-              className="px-3.5 py-2 text-text-light hover:text-text-main hover:bg-white transition-colors disabled:opacity-50"
+              className="px-3.5 py-2 text-white/50 hover:text-white hover:bg-white/10 transition-colors disabled:opacity-50"
             >
               <ChevronLeft size={16} />
             </button>
-            <span className="px-4 text-[13px] font-semibold text-text-main border-x border-black/[0.08] py-2 min-w-[70px] text-center">
+            <span className="px-4 text-[13px] font-semibold text-white border-x border-white/10 py-2 min-w-[70px] text-center">
               {currentPage + 1} / {totalPages}
             </span>
             <button 
               onClick={() => setCurrentPage(p => Math.min(totalPages - 1, p + 1))}
               disabled={currentPage === totalPages - 1}
-              className="px-3.5 py-2 text-text-light hover:text-text-main hover:bg-white transition-colors disabled:opacity-50"
+              className="px-3.5 py-2 text-white/50 hover:text-white hover:bg-white/10 transition-colors disabled:opacity-50"
             >
               <ChevronRight size={16} />
             </button>
           </div>
 
           {/* Zoom */}
-          <div className="flex items-center bg-white/80 border border-black/[0.08] rounded-full overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+          <div className="flex items-center bg-white/5 border border-white/10 rounded-full overflow-hidden shadow-sm">
             <button
               onClick={() => setZoomLevel(z => Math.max(80, z - 20))}
-              className="px-3.5 py-2 text-text-light hover:text-text-main hover:bg-white transition-colors"
+              className="px-3.5 py-2 text-white/50 hover:text-white hover:bg-white/10 transition-colors"
             >
               <Minus size={16} />
             </button>
-            <span className="px-4 text-[13px] font-semibold text-text-main border-x border-black/[0.08] py-2 min-w-[65px] text-center">
+            <span className="px-4 text-[13px] font-semibold text-white border-x border-white/10 py-2 min-w-[65px] text-center">
               {zoomLevel}%
             </span>
             <button
               onClick={() => setZoomLevel(z => Math.min(140, z + 20))}
-              className="px-3.5 py-2 text-text-light hover:text-text-main hover:bg-white transition-colors"
+              className="px-3.5 py-2 text-white/50 hover:text-white hover:bg-white/10 transition-colors"
             >
               <Plus size={16} />
             </button>

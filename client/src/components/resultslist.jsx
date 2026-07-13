@@ -15,11 +15,11 @@ export default function ResultsList({ results, query, selectedDocId, onSelectDoc
   if (!query) {
     return (
       <div className="flex flex-col items-center justify-center text-center py-20 gap-4 select-none min-h-[400px]">
-        <div className="w-16 h-16 rounded-2xl bg-[#0a1128]/10 flex items-center justify-center text-text-main">
+        <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center text-white">
           <AlertCircle size={28} />
         </div>
-        <h3 className="text-lg font-semibold text-text-main">ready to search</h3>
-        <p className="text-sm text-text-muted max-w-sm">
+        <h3 className="text-lg font-semibold text-white">ready to search</h3>
+        <p className="text-sm text-white/70 max-w-sm">
           type a query above to search across your documents, notes and knowledge base.
         </p>
       </div>
@@ -38,8 +38,8 @@ export default function ResultsList({ results, query, selectedDocId, onSelectDoc
               onClick={() => setActiveFilter(filter)}
               className={`h-10 px-4 rounded-full text-[13px] font-bold font-header transition-all ${
                 activeFilter === filter
-                  ? 'glass-blue shadow-sm'
-                  : 'bg-[#0a1128]/5 text-text-muted hover:bg-[#0a1128]/10 hover:text-text-main border border-transparent'
+                  ? 'bg-white text-black shadow-sm'
+                  : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-transparent'
               }`}
             >
               {filter}
@@ -48,21 +48,21 @@ export default function ResultsList({ results, query, selectedDocId, onSelectDoc
         </div>
 
         {/* Sort/Filter */}
-        <div className="flex items-center gap-4 text-[13px] text-text-muted font-medium">
-          <span className="flex items-center gap-1.5 text-text-muted">
-            sorted by: <span className="text-text-main font-semibold">relevance</span>
+        <div className="flex items-center gap-4 text-[13px] text-white/70 font-medium">
+          <span className="flex items-center gap-1.5 text-white/70">
+            sorted by: <span className="text-white font-semibold">relevance</span>
           </span>
         </div>
       </div>
 
       {/* Result Count */}
-      <p className="text-[13px] text-text-muted font-medium">
-        {filteredResults.length} results found for "<span className="text-text-main font-semibold">{query}</span>"
+      <p className="text-[13px] text-white/70 font-medium">
+        {filteredResults.length} results found for "<span className="text-white font-semibold">{query}</span>"
       </p>
 
       {/* Results */}
       {filteredResults.length === 0 ? (
-        <div className="py-12 text-center text-sm text-text-muted">
+        <div className="py-12 text-center text-sm text-white/70">
           no {activeFilter !== 'all results' ? activeFilter + ' ' : ''}documents match your query.
         </div>
       ) : (

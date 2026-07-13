@@ -60,8 +60,8 @@ export default function UploadPanel({ onUploadComplete }) {
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        className={`w-full max-w-2xl relative overflow-hidden rounded-2xl border-2 border-dashed transition-all duration-300 flex flex-col items-center justify-center min-h-[220px] p-8 text-center bg-white/40 backdrop-blur-sm
-          ${dragActive ? 'border-stormy-teal bg-stormy-teal/5 scale-[1.02]' : 'border-black/[0.15] hover:border-black/30'}`}
+        className={`w-full max-w-2xl relative overflow-hidden rounded-2xl border-2 border-dashed transition-all duration-300 flex flex-col items-center justify-center min-h-[220px] p-8 text-center bg-[#1C1C1C]
+          ${dragActive ? 'border-white bg-white/5 scale-[1.02]' : 'border-white/20 hover:border-white/40'}`}
         onDragEnter={handleDrag}
         onDragLeave={handleDrag}
         onDragOver={handleDrag}
@@ -77,12 +77,12 @@ export default function UploadPanel({ onUploadComplete }) {
 
         {isUploading ? (
           <div className="flex flex-col items-center gap-4 w-full max-w-sm">
-            <div className="w-12 h-12 border-4 border-[#002855]/20 border-t-[#002855] rounded-full animate-spin"></div>
+            <div className="w-12 h-12 border-4 border-white/20 border-t-white rounded-full animate-spin"></div>
             <div className="flex flex-col items-center gap-1 w-full mt-2">
-              <span className="text-[15px] font-semibold text-text-main">Indexing document...</span>
-              <div className="w-full h-2 bg-black/5 rounded-full overflow-hidden mt-3">
+              <span className="text-[15px] font-semibold text-white">Indexing document...</span>
+              <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden mt-3">
                 <motion.div 
-                  className="h-full bg-[#002855]"
+                  className="h-full bg-white"
                   initial={{ width: 0 }}
                   animate={{ width: `${progress}%` }}
                 />
@@ -91,20 +91,20 @@ export default function UploadPanel({ onUploadComplete }) {
           </div>
         ) : (
           <>
-            <div className="w-16 h-16 rounded-[24px] bg-white shadow-soft flex items-center justify-center text-text-main mb-4 group-hover:scale-110 transition-transform">
+            <div className="w-16 h-16 rounded-[24px] bg-white/5 flex items-center justify-center text-white mb-4 group-hover:scale-110 transition-transform">
               <Upload size={28} />
             </div>
             
-            <h3 className="text-xl font-bold font-header text-text-main mb-2">
+            <h3 className="text-xl font-bold font-header text-white mb-2">
               Upload Document
             </h3>
-            <p className="text-[15px] text-text-muted max-w-sm leading-relaxed mb-6">
+            <p className="text-[15px] text-white/70 max-w-sm leading-relaxed mb-6">
               Drag and drop your PDF, DOCX, or TXT files here to add them to your knowledge base.
             </p>
             
             <button 
               onClick={() => fileInputRef.current?.click()}
-              className="bg-text-main text-white px-6 py-2.5 rounded-full font-semibold text-[14px] hover:bg-text-main/90 hover:shadow-lg hover:-translate-y-0.5 transition-all"
+              className="bg-white text-black px-6 py-2.5 rounded-full font-semibold text-[14px] hover:bg-white/90 hover:shadow-lg hover:-translate-y-0.5 transition-all"
             >
               Select File
             </button>
